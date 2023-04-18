@@ -1,103 +1,86 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <unistd.h>
-#include <signal.h>
-#include <fcntl.h>
-#include <sys/stat.h>
-#include <sys/types.h>
-#include <linux/input.h>
-#include <X11/Xlib.h>
+#include <string.h>
+#include <argp.h>
+#include "./logger.h"
+#include "./analyser.h"
 
-FILE *f;
-Display *display;
-int fd;
+struct arg_config
+{
+    int log;
+    char *file;
+    int analyse;
+    char *save;
 
-void sigint_handler(int sig) {
-    printf("Received SIGINT signal. Cleaning up...\n");
-    
-    close(fd);
-    XCloseDisplay(display);
-    fclose(f);
+};
 
-    exit(0);
-}
+const char *argp_program_version = "version 0.1";
+const char *argp_program_bug_address = "test@example.com";
+error_t argp_err_exit_status = 1;
 
-void saveValue(FILE *f, int x, int y) {
-    fprintf(f, "%i,%i\n", x, y);
-}
+static struct argp_option opt_config[] =
+{
+  { "log", 'l', 0, 0, "Log all clicks and save them to a file", 0},
+  { "file", 'f', "LOG_FILE", 0, "File where the clicks are logged (Default: logs.txt)", 0},
+  { "analyse", 'a', 0, 0, "Analyse the data and show it", 0},
+  { "save", 's', "STATS_IMAGE", 0, "Save the data into a image file", 0},
+  { 0 }
+};
 
-int main() {
-    // set up the signal handler function for SIGINT.
-    signal(SIGINT, sigint_handler);
+static error_t parse_config(int key, char* arg, struct argp_state* state)
+{
+    struct arg_config *config = state->input;
 
-    f = fopen("file.txt", "a");
-    if (f == NULL)
+    switch(key)
     {
-        printf("Error opening file!\n");
-        exit(1);
+        case 'l':
+            config->log = 1;
+            break;
+        case 'f':
+            config->file = arg;
+            break;
+        case 'a':
+            config->analyse = 1;
+            break;
+        case 's':
+            config->save = arg;
+            break;
+        case ARGP_KEY_ARG:
+            argp_error(state, "%s is not a valid command", arg);
+         break;
+
+        default:
+            return ARGP_ERR_UNKNOWN;
     }
-    
-    display = XOpenDisplay(NULL);
-    int screen_num = DefaultScreen(display);
-    Screen *screen = ScreenOfDisplay(display, screen_num);
-    printf("Screen size: %dx%d\n", screen->width, screen->height);
-
-    Window root_window = RootWindow(display, screen_num);
-    Window child_window;
-    int root_x, root_y, win_x, win_y;
-    unsigned int mask;
-
-    
-    struct input_event ie;
-
-    // change "event18" to the appropriate device for your system
-    fd = open("/dev/input/event18", O_RDONLY);
-    if (fd == -1) {
-        perror("Could not open input device");
-        exit(EXIT_FAILURE);
-    }
-
-    int count = 0;
-    int numberClicks = 0;
-
-    int xDown = 0;
-    int yDown = 0;
-
-    bool isTouch = false;
-    bool isClick = false;
-
-    while (read(fd, &ie, sizeof(struct input_event))) {
-        isTouch = (ie.type == EV_KEY && ie.code == BTN_TOUCH);
-        isClick = (ie.type == EV_KEY && (ie.code == BTN_LEFT || ie.code == BTN_RIGHT) && ie.value == 1);
-        if (isTouch || isClick) {
-            if (ie.value == 1) { // finger down
-                XQueryPointer(display, root_window, &root_window, &child_window, &root_x, &root_y, &win_x, &win_y, &mask);
-                xDown = root_x;
-                yDown = root_y;
-
-                count++;
-            } else { // finger up
-                XQueryPointer(display, root_window, &root_window, &child_window, &root_x, &root_y, &win_x, &win_y, &mask);
-                // todo get timer between events to avoid touch click release to be count as two clicks
-                if (xDown == root_x && yDown == root_y) {
-                    numberClicks++;
-
-                    // reopen the stream to save the buffer
-                    if (numberClicks % 500 == 0) {
-                        fclose(f);
-                        f = fopen("file.txt", "a");
-                    }
-                    saveValue(f, root_x, root_y);
-                    printf("Mouse position: %d,%d, %i\n", root_x, root_y, numberClicks);
-                }
-                count--;
-            }
-        } 
-    }
-
-
-
     return 0;
 }
 
+static struct argp argp =
+{
+    opt_config,
+    parse_config,
+    "COMMAND",
+    NULL,
+    NULL,
+    NULL,
+    NULL
+};
+
+void cmd_config(int argc, char**argv)
+{
+    struct arg_config config = { 0, NULL, 0, NULL };
+    argp_parse(&argp, argc, argv, ARGP_IN_ORDER, NULL, &config);
+    if (config.log) {
+        if (!config.file) {
+            printf("Not log file set. (Default: 'logs.txt')\n");
+            logger("logs.txt");
+        }
+        logger(config.file);
+    } else if(config.analyse) {
+        analyser();
+    }
+}
+
+int main(int argc, char** argv)
+{
+    cmd_config(argc, argv);
+    return 0;
+}
