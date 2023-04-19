@@ -36,7 +36,7 @@ void logger(char *file) {
     if (f == NULL)
     {
         printf("Error opening file!\n");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
     
     display = XOpenDisplay(NULL);
@@ -53,7 +53,7 @@ void logger(char *file) {
     struct input_event ie;
 
     // change "event18" to the appropriate device for your system
-    fd = open("/dev/input/event18", O_RDONLY);
+    fd = open("/dev/input/event10", O_RDONLY);
     if (fd == -1) {
         perror("Could not open input device");
         exit(EXIT_FAILURE);

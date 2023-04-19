@@ -2,6 +2,7 @@
 #include <argp.h>
 #include "./logger.h"
 #include "./analyser.h"
+#include <stdlib.h>
 
 struct arg_config
 {
@@ -9,7 +10,10 @@ struct arg_config
     char *file;
     int analyse;
     char *save;
-
+    int row;
+    int column;
+    int width;
+    int height;
 };
 
 const char *argp_program_version = "version 0.1";
@@ -22,13 +26,17 @@ static struct argp_option opt_config[] =
   { "file", 'f', "LOG_FILE", 0, "File where the clicks are logged (Default: logs.txt)", 0},
   { "analyse", 'a', 0, 0, "Analyse the data and show it", 0},
   { "save", 's', "STATS_IMAGE", 0, "Save the data into a image file", 0},
+  { "row", 'r', "NB_ROW", 0, "The number of row the image will be divised in", 0},
+  { "column", 'c', "NB_COL", 0, "The number of column the image will be divised in", 0},
+  { "width", 'w', "WIDTH_PX", 0, "The width of the image in pixel", 0},
+  { "height", 'h', "HEIGHT_PX", 0, "The height of the image in pixel", 0},
   { 0 }
 };
 
 static error_t parse_config(int key, char* arg, struct argp_state* state)
 {
     struct arg_config *config = state->input;
-
+    char *p;
     switch(key)
     {
         case 'l':
@@ -42,6 +50,18 @@ static error_t parse_config(int key, char* arg, struct argp_state* state)
             break;
         case 's':
             config->save = arg;
+            break;
+        case 'r':
+            config->row = strtol(arg, &p, 10);
+            break;
+        case 'c':
+            config->column = strtol(arg, &p, 10);
+            break;
+        case 'w':
+            config->width = strtol(arg, &p, 10);
+            break;
+        case 'h':
+            config->height = strtol(arg, &p, 10);;
             break;
         case ARGP_KEY_ARG:
             argp_error(state, "%s is not a valid command", arg);
@@ -66,16 +86,12 @@ static struct argp argp =
 
 void cmd_config(int argc, char**argv)
 {
-    struct arg_config config = { 0, NULL, 0, NULL };
+    struct arg_config config = { 0, "logs.txt", 0, NULL, 0, 0, 0, 0 };
     argp_parse(&argp, argc, argv, ARGP_IN_ORDER, NULL, &config);
     if (config.log) {
-        if (!config.file) {
-            printf("Not log file set. (Default: 'logs.txt')\n");
-            logger("logs.txt");
-        }
         logger(config.file);
     } else if(config.analyse) {
-        analyser();
+        analyser(config.file, config.row, config.column, config.width, config.height);
     }
 }
 
