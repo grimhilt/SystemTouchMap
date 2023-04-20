@@ -1,9 +1,9 @@
 CC = gcc
-CFLAGS = -Wall -Wextra -std=c99
+CFLAGS = -Wall -Wextra -std=c99 -lm
 LDFLAGS = 
-LDLIBS = -lX11 -linput -lm `pkg-config --cflags libinput` `pkg-config --libs libinput`
+LDLIBS = -lX11 -linput -lSDL2_image `pkg-config --cflags libinput sdl2` `pkg-config --libs libinput sdl2`
 
-SRC = logger.c analyser.c main.c
+SRC = logger.c sdlUtil.c analyser.c main.c
 OBJ = ${SRC:.c=.o}
 
 main: ${SRC}
