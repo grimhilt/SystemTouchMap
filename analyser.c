@@ -112,7 +112,7 @@ void analyser(char *file, int row, int column, int width, int height, int screen
             }
         }
     }
-    IMG_SavePNG(surface, "./grid.png");
+    IMG_SavePNG(surface, "./save.png");
     displaySurface(surface);
     fclose(f);
 }
