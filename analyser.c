@@ -36,7 +36,7 @@ uint32_t scaleColor(int min, int max, int value, uint32_t min_color, uint32_t ma
     return color;
 }
 
-void analyser(char *file, int row, int column, int width, int height) {
+void analyser(char *file, int row, int column, int width, int height, int screenWidth, int screenHeight) {
     // todo without value
     printf("analyser\n");
     FILE *f;
@@ -52,8 +52,13 @@ void analyser(char *file, int row, int column, int width, int height) {
 
     // init value size
     int map[row][column];
-    int sizeRow = height / column;
-    int sizeCol = width / row;
+     for (int y = 0; y < row; y++) {
+        for (int x = 0; x < column; x++) {
+            map[x][y] = 0;
+        }
+     }
+    int sizeRow = screenHeight / column;
+    int sizeCol = screenWidth / row;
 
     int val1;
     int val2;
@@ -85,18 +90,29 @@ void analyser(char *file, int row, int column, int width, int height) {
             }
         }
     }
-
+        for (int x = 0; x < column; x++) {
+    for (int y = 0; y < row; y++) {
+            printf("%i ", map[x][y]);
+        }
+        printf("\n");
+    }
+    printf("max: %i\n");
+    
+    int sizeRowImg = height / column;
+    int sizeColImg = width / row;
     SDL_Surface *surface = create_surface(width, height);
     Uint32 color;
-    for (int j = 0; j < height; j++) {
-        for (int i = 0; i < width; i++) {
-            color = scaleColor(0, 1000, i, 0xFFFFFFFF, 0xFF0000FF);
-            WritePixel(surface, i, j, color);
+    for (int y = 0; y < row; y++) {
+        for (int x = 0; x < column; x++) {
+            color = scaleColor(0, max, map[x][y], 0xFFFFFFFF, 0xFF0000FF);
+            for (int yy = sizeRowImg * y; yy < sizeRowImg * (y + 1); yy++) {
+                for (int xx = sizeColImg * x; xx < sizeColImg * (x + 1); xx++) {
+                    WritePixel(surface, xx, yy, color);
+                }
+            }
         }
     }
     IMG_SavePNG(surface, "./grid.png");
     displaySurface(surface);
-    printf("%s, %i, %i\n", line, val1, val2);
-
     fclose(f);
 }

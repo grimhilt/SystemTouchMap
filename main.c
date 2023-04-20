@@ -91,7 +91,7 @@ void cmd_config(int argc, char**argv)
     if (config.log) {
         logger(config.file);
     } else if(config.analyse) {
-        analyser(config.file, config.row, config.column, config.width, config.height);
+        analyser(config.file, config.row, config.column, config.width, config.height, 1920, 1080);
     }
 }
 

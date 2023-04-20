@@ -53,7 +53,7 @@ void logger(char *file) {
     struct input_event ie;
 
     // change "event18" to the appropriate device for your system
-    fd = open("/dev/input/event10", O_RDONLY);
+    fd = open("/dev/input/event12", O_RDONLY);
     if (fd == -1) {
         perror("Could not open input device");
         exit(EXIT_FAILURE);
