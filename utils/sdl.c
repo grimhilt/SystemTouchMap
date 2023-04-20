@@ -52,13 +52,11 @@ void event_loop(SDL_Renderer *renderer, SDL_Texture *texture)
 {
     SDL_Event event;
     SDL_Texture *t = texture;
-
     draw(renderer, t);
 
     while (1)
     {
         SDL_WaitEvent(&event);
-
         switch (event.type)
         {
             // If the "quit" button is pushed, ends the event loop.
@@ -86,10 +84,6 @@ void displaySurface(SDL_Surface *surface)
     if (SDL_Init(SDL_INIT_VIDEO) != 0)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    // texture = SDL_CreateTextureFromSurface(renderer, surface);
-    // SDL_RenderCopy(renderer, texture, NULL, NULL);
-    // SDL_RenderPresent(renderer);
-
     // Creates a window.
     SDL_Window *window = SDL_CreateWindow(
         "Image", 0, 0, 10, 10, SDL_WINDOW_SHOWN | SDL_WINDOW_RESIZABLE);
@@ -102,8 +96,6 @@ void displaySurface(SDL_Surface *surface)
     if (renderer == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-
-
     SDL_Texture *texture =  SDL_CreateTextureFromSurface(renderer, surface);
 
     // Gets the width and the height of the texture.
@@ -112,15 +104,7 @@ void displaySurface(SDL_Surface *surface)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
     SDL_SetWindowSize(window, w, h);
-    
-    // SDL_Surface *surface = load_image(argv[1]);
-    // surface = binarization(surface);
-
-    SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
-    SDL_RenderClear(renderer);
     event_loop(renderer, texture);
-
-    SDL_SetRenderDrawColor(renderer, 255, 0, 0, 255);
 
     // Destroys the objects.
     SDL_DestroyTexture(texture);

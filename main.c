@@ -14,6 +14,8 @@ struct arg_config
     int column;
     int width;
     int height;
+    int screenWidth;
+    int screenHeight;
 };
 
 const char *argp_program_version = "version 0.1";
@@ -55,7 +57,9 @@ static error_t parse_config(int key, char* arg, struct argp_state* state)
             config->row = strtol(arg, &p, 10);
             break;
         case 'c':
+            printf("%s\n", arg);
             config->column = strtol(arg, &p, 10);
+            printf("%i\n", config->column);
             break;
         case 'w':
             config->width = strtol(arg, &p, 10);
@@ -86,12 +90,12 @@ static struct argp argp =
 
 void cmd_config(int argc, char**argv)
 {
-    struct arg_config config = { 0, "logs.txt", 0, NULL, 0, 0, 0, 0 };
+    struct arg_config config = { 0, "logs.txt", 0, NULL, 10, 10, 0, 0, 1920, 1080 };
     argp_parse(&argp, argc, argv, ARGP_IN_ORDER, NULL, &config);
     if (config.log) {
         logger(config.file);
     } else if(config.analyse) {
-        analyser(config.file, config.row, config.column, config.width, config.height, 1920, 1080);
+        analyser(&config);
     }
 }
 
