@@ -5,46 +5,33 @@
 #include <SDL2/SDL_image.h>
 #include "utils/sdl.h"
 #include "utils/scaleColor.h"
+#include "analyser.h"
 
-struct arg_config
-{
-    int log;
-    char *file;
-    int analyse;
-    char *save;
-    int row;
-    int column;
-    int width;
-    int height;
-    int screenWidth;
-    int screenHeight;
-};
-
-void analyser(struct arg_config *config) {
+void analyser(struct arg_config config) {
     // todo without value
+    printf("w: %i, h: %i, sw: %i, sh: %i, r: %i, c: %i\n", config.width, config.height, config.screenWidth, config.screenHeight, config.row, config.column);
     printf("analyser\n");
     FILE *f;
     char *line = NULL;
     size_t len = 0;
     size_t read;
 
-    f = fopen(config->file, "r");
+    f = fopen(config.file, "r");
     if (f == NULL) {
         printf("Error opening file!\n");
         exit(EXIT_FAILURE);
     }
 
     // init value size
-    int map[config->row][config->column];
-    for (int y = 0; y < config->row; y++) {
-        for (int x = 0; x < config->column; x++) {
-            map[x][y] = 0;
+    int map[config.row][config.column];
+    for (int y = 0; y < config.row; y++) {
+        for (int x = 0; x < config.column; x++) {
+            map[y][x] = 0;
         }
     }
 
-    printf("%i / %i\n", config->screenHeight, config->column);
-    int sizeRow = config->screenHeight / config->column;
-    int sizeCol = config->screenWidth / config->row;
+    int sizeRow = config.screenHeight / config.row;
+    int sizeCol = config.screenWidth / config.column;
 
     int val1;
     int val2;
@@ -53,6 +40,7 @@ void analyser(struct arg_config *config) {
     int max = 0;
     while ((read = getline(&line, &len, f)) != -1) {
         second = val1 = val2 = 0;
+        // extract values from line
         for (char *c = line; *c != '\n'; c++) {
             if (second == 1) {
                 val2 *= 10;
@@ -64,32 +52,37 @@ void analyser(struct arg_config *config) {
                 val1 += *c - 48;
             }
         }
-
+        
+        // save value in the map
         int colPlace = val1 / sizeCol;
         int rowPlace = val2 / sizeRow;
-        if (!map[rowPlace][colPlace]) {
-            map[rowPlace][colPlace] = 1;
+        int *v = &map[rowPlace][colPlace];
+        if (!*v) {
+            *v = 1;
         } else {
-            map[rowPlace][colPlace]++;
-            if (map[rowPlace][colPlace] > max) {
-                max = map[rowPlace][colPlace];
+            ++*v;
+            if (*v > max) {
+                max = *v;
             }
         }
     }
-        for (int x = 0; x < config->column; x++) {
-    for (int y = 0; y < config->row; y++) {
-            printf("%i ", map[x][y]);
-        }
-        printf("\n");
-    }
-    printf("max: %i\n");
+
+    // for (int x = 0; x < config.column; x++) {
+    //     for (int y = 0; y < config.row; y++) {
+    //         printf("%i ", map[x][y]);
+    //     }
+    //     printf("\n");
+    // }
+    // printf("max: %i\n", max);
     
-    int sizeRowImg = config->height / config->column;
-    int sizeColImg = config->width / config->row;
-    SDL_Surface *surface = create_surface(config->width, config->height);
-    Uint32 color;
-    for (int y = 0; y < config->row; y++) {
-        for (int x = 0; x < config->column; x++) {
+    // construct image based on the map
+    int sizeRowImg = config.height / config.row;
+    int sizeColImg = config.width / config.column;
+    printf("w:%i, h:%i, szC:%i, szR:%i, szW:%i, szH:%i\n", config.width, config.height, sizeColImg, sizeRowImg, sizeColImg*config.column, sizeRowImg*config.row);
+    SDL_Surface *surface = create_surface(sizeColImg*config.column, sizeRowImg*config.row);
+    Uint32 color = 0xFFFF0000;
+    for (int y = 0; y < config.row; y++) {
+        for (int x = 0; x < config.column; x++) {
             color = scaleColor(0, max, map[x][y], 0xFFFFFFFF, 0xFF0000FF);
             for (int yy = sizeRowImg * y; yy < sizeRowImg * (y + 1); yy++) {
                 for (int xx = sizeColImg * x; xx < sizeColImg * (x + 1); xx++) {

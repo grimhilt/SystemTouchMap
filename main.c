@@ -24,7 +24,6 @@ static struct argp_option opt_config[] =
 static error_t parse_config(int key, char* arg, struct argp_state* state)
 {
     struct arg_config *config = state->input;
-    char *p;
     switch(key)
     {
         case 'l':
@@ -40,18 +39,16 @@ static error_t parse_config(int key, char* arg, struct argp_state* state)
             config->save = arg;
             break;
         case 'r':
-            config->row = strtol(arg, &p, 10);
+            config->row = atoi(arg);
             break;
         case 'c':
-            printf("%s\n", arg);
-            config->column = strtol(arg, &p, 10);
-            printf("%i\n", config->column);
+            config->column = atoi(arg);
             break;
         case 'w':
-            config->width = strtol(arg, &p, 10);
+            config->width = atoi(arg);
             break;
         case 'h':
-            config->height = strtol(arg, &p, 10);;
+            config->height = atoi(arg);
             break;
         case ARGP_KEY_ARG:
             argp_error(state, "%s is not a valid command", arg);
@@ -81,7 +78,7 @@ void cmd_config(int argc, char**argv)
     if (config.log) {
         logger(config.file);
     } else if(config.analyse) {
-        analyser(&config);
+        analyser(config);
     }
 }
 
