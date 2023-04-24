@@ -7,10 +7,48 @@
 #include "utils/scaleColor.h"
 #include "analyser.h"
 
+void parseArgument(struct arg_config *config) {
+    // setup screen size if not defined by user
+    if (config->screenWidth == 0 && config->screenHeight == 0) {
+        getScreenSize(&(config->screenWidth), &(config->screenHeight));
+    }
+
+    int row;
+    int column;
+    int width;
+    int height;
+
+    // setup default size of the image
+    if (config->width == 0 && config->height == 0) {
+        config->width = config->screenWidth / 2;
+        config->height = config->screenHeight / 2;
+    } else if (config->width == 0 && config->height != 0) {
+        config->width = config->height * config->screenWidth / config->screenHeight;
+    } else if (config->width != 0 && config->height == 0) {
+        config->height = config->width * config->screenHeight / config->screenWidth;
+    }
+
+    if (config->width > config->screenWidth || config->height > config->screenHeight) {
+        printf("Cannot have an image size larger than the screen size\n");
+        exit(EXIT_FAILURE);
+    }
+
+    if (config->row == 0 && config->column == 0) {
+        config->row = 10;
+        config->column = 10;
+    } else if (config->row == 0 && config->column != 0) {
+        config->row = config->column;
+    } else if (config->width != 0 && config->height == 0) {
+        config->column = config->row;
+    }
+}
+
 void analyser(struct arg_config config) {
     // todo without value
     printf("w: %i, h: %i, sw: %i, sh: %i, r: %i, c: %i\n", config.width, config.height, config.screenWidth, config.screenHeight, config.row, config.column);
     printf("analyser\n");
+    parseArgument(&config);
+    printf("w: %i, h: %i, sw: %i, sh: %i, r: %i, c: %i\n", config.width, config.height, config.screenWidth, config.screenHeight, config.row, config.column);
     FILE *f;
     char *line = NULL;
     size_t len = 0;
@@ -67,9 +105,9 @@ void analyser(struct arg_config config) {
         }
     }
 
-    // for (int x = 0; x < config.column; x++) {
-    //     for (int y = 0; y < config.row; y++) {
-    //         printf("%i ", map[x][y]);
+    // for (int y = 0; y < config.row; y++) {
+    //     for (int x = 0; x < config.column; x++) {
+    //         printf("%i ", map[y][x]);
     //     }
     //     printf("\n");
     // }
@@ -83,7 +121,7 @@ void analyser(struct arg_config config) {
     Uint32 color = 0xFFFF0000;
     for (int y = 0; y < config.row; y++) {
         for (int x = 0; x < config.column; x++) {
-            color = scaleColor(0, max, map[x][y], 0xFFFFFFFF, 0xFF0000FF);
+            color = scaleColor(0, max, map[y][x], 0xFFFFFFFF, 0xFF0000FF);
             for (int yy = sizeRowImg * y; yy < sizeRowImg * (y + 1); yy++) {
                 for (int xx = sizeColImg * x; xx < sizeColImg * (x + 1); xx++) {
                     WritePixel(surface, xx, yy, color);

@@ -73,7 +73,7 @@ static struct argp argp =
 
 void cmd_config(int argc, char**argv)
 {
-    struct arg_config config = { 0, "logs.txt", 0, NULL, 10, 80, 960, 540, 1920, 1080 };
+    struct arg_config config = { 0, "logs.txt", 0, NULL, 0, 0, 0, 0, 0, 0 };
     argp_parse(&argp, argc, argv, ARGP_IN_ORDER, NULL, &config);
     if (config.log) {
         logger(config.file);
