@@ -61,15 +61,7 @@ void parseArgument(struct arg_config *config)
 
 void analyser(struct arg_config config)
 {
-    // todo without value
-    printf("w: %i, h: %i, sw: %i, sh: %i, r: %i, c: %i\n", config.width,
-           config.height, config.screenWidth, config.screenHeight, config.row,
-           config.column);
-    printf("analyser\n");
     parseArgument(&config);
-    printf("w: %i, h: %i, sw: %i, sh: %i, r: %i, c: %i\n", config.width,
-           config.height, config.screenWidth, config.screenHeight, config.row,
-           config.column);
     FILE *f;
     char *line = NULL;
     size_t len = 0;
