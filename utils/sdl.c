@@ -38,8 +38,8 @@ void WritePixel(SDL_Surface *surface, int x, int y, Uint32 pixel)
 
 SDL_Surface *create_surface(int width, int height)
 {
-    return SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32,
-        0x00FF0000, 0x0000FF00, 0x000000FF, 0xFF000000);
+    return SDL_CreateRGBSurface(SDL_SWSURFACE, width, height, 32, 0x00FF0000,
+                                0x0000FF00, 0x000000FF, 0xFF000000);
 }
 
 void draw(SDL_Renderer *renderer, SDL_Texture *texture)
@@ -96,7 +96,7 @@ void displaySurface(SDL_Surface *surface)
     if (renderer == NULL)
         errx(EXIT_FAILURE, "%s", SDL_GetError());
 
-    SDL_Texture *texture =  SDL_CreateTextureFromSurface(renderer, surface);
+    SDL_Texture *texture = SDL_CreateTextureFromSurface(renderer, surface);
 
     // Gets the width and the height of the texture.
     int w, h;
@@ -111,5 +111,4 @@ void displaySurface(SDL_Surface *surface)
     SDL_DestroyRenderer(renderer);
     SDL_DestroyWindow(window);
     SDL_Quit();
-
 }

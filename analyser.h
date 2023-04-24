@@ -14,6 +14,7 @@ struct arg_config
     int screenWidth;
     int screenHeight;
 };
+
 void analyser(struct arg_config config);
 
 #endif
