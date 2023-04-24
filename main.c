@@ -4,8 +4,8 @@
 #include "./analyser.h"
 #include "./logger.h"
 
-const char *argp_program_version = "version 0.1";
-const char *argp_program_bug_address = "test@example.com";
+const char *argp_program_version = "version 1.0";
+const char *argp_program_bug_address = "https://github.com/grimhilt/SystemTouchMap/issues";
 error_t argp_err_exit_status = 1;
 
 static struct argp_option opt_config[] = {
