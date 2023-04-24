@@ -4,20 +4,6 @@
 #include "./analyser.h"
 #include <stdlib.h>
 
-struct arg_config
-{
-    int log;
-    char *file;
-    int analyse;
-    char *save;
-    int row;
-    int column;
-    int width;
-    int height;
-    int screenWidth;
-    int screenHeight;
-};
-
 const char *argp_program_version = "version 0.1";
 const char *argp_program_bug_address = "test@example.com";
 error_t argp_err_exit_status = 1;
@@ -90,7 +76,7 @@ static struct argp argp =
 
 void cmd_config(int argc, char**argv)
 {
-    struct arg_config config = { 0, "logs.txt", 0, NULL, 10, 10, 0, 0, 1920, 1080 };
+    struct arg_config config = { 0, "logs.txt", 0, NULL, 10, 80, 960, 540, 1920, 1080 };
     argp_parse(&argp, argc, argv, ARGP_IN_ORDER, NULL, &config);
     if (config.log) {
         logger(config.file);

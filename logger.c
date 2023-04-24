@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
+#include <string.h>
 #include <unistd.h>
 #include <signal.h>
 #include <fcntl.h>
@@ -12,6 +13,40 @@
 FILE *f;
 Display *display;
 int fd;
+
+int find_tracking_device(char *mouse_device) {
+    FILE *f_devices;
+    char *line;
+    size_t len = 0;
+    size_t read;
+
+    f_devices = fopen("/proc/bus/input/devices", "r");
+    if (f_devices == NULL) {
+        printf("Error opening /proc/bus/input/devices file!\n");
+        exit(EXIT_FAILURE);
+    }
+
+    char waitForChar = 'N';
+    while ((read = getline(&line, &len, f_devices)) != -1) {
+        if (*line == waitForChar) {
+            if (*line == 'N') {
+                // line of Name
+                if (strstr(line, "Touchpad") != NULL) {
+                    waitForChar = 'H';
+                }
+            } else {
+                // line of handler
+                line += 12;
+                for (char *c = line; *c != ' ' && *c != '\0' && *c != '\n'; ++c) {
+                    *mouse_device = *c;
+                    mouse_device++;
+                }
+                return 0;
+            }
+        }
+    }
+    return 1;
+}
 
 void sigint_handler(int sig) {
     printf("Received SIGINT (%i) signal. Cleaning up...\n", sig);
@@ -63,13 +98,23 @@ void logger(char *file) {
 
     struct input_event ie;
 
-    // change "event18" to the appropriate device for your system
-    fd = open("/dev/input/event12", O_RDONLY);
+    // open input event
+    char mouse_device[256];
+    if (find_tracking_device(mouse_device) > 0) {
+        printf("Could not find tracking device.\n");
+        exit(EXIT_FAILURE);
+    }
+    
+    char fileInput[256] = "/dev/input/";
+    strcat(fileInput, mouse_device);
+    printf("Opening %s\n", fileInput);
+    fd = open(fileInput, O_RDONLY);
     if (fd == -1) {
         perror("Could not open input device");
         exit(EXIT_FAILURE);
     }
 
+    // listen for events
     int numberClicks = 0;
     int xDown = 0;
     int yDown = 0;
