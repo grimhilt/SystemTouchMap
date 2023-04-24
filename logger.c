@@ -128,6 +128,8 @@ void logger(char *file) {
         if (isClick) {
             XQueryPointer(display, root_window, &root_window, &child_window, &root_x, &root_y, &win_x, &win_y, &mask);
             clicked(&numberClicks, root_x, root_y, f, file);
+            xDown = -1;
+            yDown = -1;
         } else if (isTouch) {
             if (ie.value == 1) { // finger down
                 XQueryPointer(display, root_window, &root_window, &child_window, &root_x, &root_y, &win_x, &win_y, &mask);
