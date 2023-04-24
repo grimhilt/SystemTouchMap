@@ -156,7 +156,9 @@ void analyser(struct arg_config config)
         }
     }
 
-    IMG_SavePNG(surface, "./save.png");
+    if (config.save != NULL) {
+        IMG_SavePNG(surface, config.save);
+    }
     displaySurface(surface);
     fclose(f);
 }

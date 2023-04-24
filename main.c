@@ -13,7 +13,7 @@ static struct argp_option opt_config[] = {
     {"file", 'f', "LOG_FILE", 0,
      "File where the clicks are logged (Default: logs.txt)", 0},
     {"analyse", 'a', 0, 0, "Analyse the data and show it", 0},
-    {"save", 's', "STATS_IMAGE", 0, "Save the data into a image file", 0},
+    {"save", 's', "STATS_IMAGE", 0, "Save the data into a PNG file", 0},
     {"row", 'r', "NB_ROW", 0, "The number of row the image will be divised in",
      0},
     {"column", 'c', "NB_COL", 0,
