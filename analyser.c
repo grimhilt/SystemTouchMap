@@ -5,12 +5,15 @@
 #include <stdlib.h>
 #include "analyser.h"
 #include "utils/scaleColor.h"
-#include "utils/sdl.h"
 #include "utils/screenSize.h"
+#include "utils/sdl.h"
 
-void printMap(int col, int row, int *map) {
-    for (int y = 0; y < row; y++) {
-        for (int x = 0; x < col; x++) {
+void printMap(int col, int row, int *map)
+{
+    for (int y = 0; y < row; y++)
+    {
+        for (int x = 0; x < col; x++)
+        {
             printf("%i ", *map);
             map++;
         }
@@ -80,8 +83,6 @@ void analyser(struct arg_config config)
         exit(EXIT_FAILURE);
     }
 
-    int *map = calloc(config.row * config.column, sizeof(int));
-
     int sizeRow = config.screenHeight / config.row;
     int sizeCol = config.screenWidth / config.column;
 
@@ -89,6 +90,7 @@ void analyser(struct arg_config config)
     int val2;
     int second;
 
+    int *map = calloc(config.row * config.column, sizeof(int));
     int max = 0;
     while ((read = getline(&line, &len, f)) != -1)
     {
@@ -115,20 +117,39 @@ void analyser(struct arg_config config)
         // save value in the map
         int colPlace = val1 / sizeCol;
         int rowPlace = val2 / sizeRow;
-        int *val = &map[rowPlace + colPlace * config.row]; 
-        ++*val;
-        if (*val > max) max = *val;
+        if (colPlace >= config.column)
+        {
+            colPlace = config.column - 1;
+        }
+        if (rowPlace >= config.row)
+        {
+            rowPlace = config.row - 1;
+        }
+
+        int index = rowPlace + colPlace * config.row;
+        if (index >= 0 && index < config.row * config.column)
+        {
+            map[index]++;
+            if (map[index] > max)
+            {
+                max = map[index];
+            }
+        }
+        else
+        {
+            printf("Error: out of bounds access at index %d\n", index);
+        }
     }
 
     printf("max click in same spot: %i\n", max);
-    // printMap(config.column, config.row, map);
 
     // construct image based on the map
     int sizeRowImg = config.height / config.row;
     int sizeColImg = config.width / config.column;
-    printf("w:%i, h:%i, szC:%i, szR:%i, szW:%i, szH:%i\n", config.width,
-           config.height, sizeColImg, sizeRowImg, sizeColImg * config.column,
-           sizeRowImg * config.row);
+    printf("c:%i, r:%i, w:%i, h:%i, szC:%i, szR:%i, szW:%i, szH:%i\n",
+           config.column, config.row, config.width, config.height, sizeColImg,
+           sizeRowImg, sizeColImg * config.column, sizeRowImg * config.row);
+
     SDL_Surface *surface =
         create_surface(sizeColImg * config.column, sizeRowImg * config.row);
     Uint32 color = 0xFFFF0000;
@@ -136,7 +157,8 @@ void analyser(struct arg_config config)
     {
         for (int x = 0; x < config.column; x++)
         {
-            color = scaleColor(0, max, map[x + y * config.row], 0xFFFFFFFF, 0xFF0000FF);
+            color = scaleColor(0, max, map[x + y * config.row], 0xFFFFFFFF,
+                               0xFF0000FF);
             for (int yy = sizeRowImg * y; yy < sizeRowImg * (y + 1); yy++)
             {
                 for (int xx = sizeColImg * x; xx < sizeColImg * (x + 1); xx++)
@@ -147,9 +169,11 @@ void analyser(struct arg_config config)
         }
     }
 
-    if (config.save != NULL) {
+    if (config.save != NULL)
+    {
         IMG_SavePNG(surface, config.save);
     }
     displaySurface(surface);
     fclose(f);
+    free(map);
 }
