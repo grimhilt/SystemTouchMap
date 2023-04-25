@@ -126,7 +126,7 @@ void analyser(struct arg_config config)
             rowPlace = config.row - 1;
         }
 
-        int index = rowPlace + colPlace * config.row;
+        int index = rowPlace * config.column + colPlace;
         if (index >= 0 && index < config.row * config.column)
         {
             map[index]++;
@@ -137,11 +137,13 @@ void analyser(struct arg_config config)
         }
         else
         {
+            printf("colPlace:%i, rowPlace:%i\n", colPlace, rowPlace);
             printf("Error: out of bounds access at index %d\n", index);
         }
     }
 
     printf("max click in same spot: %i\n", max);
+    // printMap(config.column, config.row, map);
 
     // construct image based on the map
     int sizeRowImg = config.height / config.row;
