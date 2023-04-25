@@ -1,5 +1,16 @@
 # SystemTouchMap
 
+A command line tool allowing you to log touchpad clicks on your computer and to create a color map of the clicks positions.
+
+Behavior:
+* A touch without moving on the touchpad counts as a click
+* A left of right click on the touchpad (press not just touch) counts as a click
+* Double click or touch counts as two clicks
+* Click, move, unclick counts as a click
+* Touch, click, untouch, counts as a click
+* Scrolling doesn't count as a click
+* Two fingers touch doesn't count as a click
+
 ## Context
 
 
