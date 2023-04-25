@@ -136,9 +136,12 @@ void logger(char *file)
 
     bool isTouch = false;
     bool isClick = false;
+    bool isTwoFingers = false;
+    bool isTwoFingersDown = false;
 
     while (read(fd, &ie, sizeof(struct input_event)))
     {
+        isTwoFingers = (ie.type == EV_KEY && ie.code == BTN_TOOL_DOUBLETAP);
         isTouch = (ie.type == EV_KEY && ie.code == BTN_TOUCH);
         isClick =
             (ie.type == EV_KEY &&
@@ -151,7 +154,7 @@ void logger(char *file)
             xDown = -1;
             yDown = -1;
         }
-        else if (isTouch)
+        else if (isTouch && !isTwoFingers && !isTwoFingersDown)
         {
             if (ie.value == 1)
             { // finger down
@@ -168,6 +171,19 @@ void logger(char *file)
                 {
                     clicked(&numberClicks, root_x, root_y, f, file);
                 }
+            }
+        }
+        else if (isTwoFingers)
+        {
+            if (ie.value == 1)
+            { // finger down
+                isTwoFingersDown = true;
+            }
+            else
+            { // finger up
+                isTwoFingersDown = false;
+                xDown = -1;
+                yDown = -1;
             }
         }
     }
