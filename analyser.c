@@ -6,6 +6,17 @@
 #include "analyser.h"
 #include "utils/scaleColor.h"
 #include "utils/sdl.h"
+#include "utils/screenSize.h"
+
+void printMap(int col, int row, int *map) {
+    for (int y = 0; y < row; y++) {
+        for (int x = 0; x < col; x++) {
+            printf("%i ", *map);
+            map++;
+        }
+        printf("\n");
+    }
+}
 
 void parseArgument(struct arg_config *config)
 {
@@ -14,11 +25,6 @@ void parseArgument(struct arg_config *config)
     {
         getScreenSize(&(config->screenWidth), &(config->screenHeight));
     }
-
-    int row;
-    int column;
-    int width;
-    int height;
 
     // setup default size of the image
     if (config->width == 0 && config->height == 0)
@@ -74,15 +80,7 @@ void analyser(struct arg_config config)
         exit(EXIT_FAILURE);
     }
 
-    // init value size
-    int map[config.row][config.column];
-    for (int y = 0; y < config.row; y++)
-    {
-        for (int x = 0; x < config.column; x++)
-        {
-            map[y][x] = 0;
-        }
-    }
+    int *map = calloc(config.row * config.column, sizeof(int));
 
     int sizeRow = config.screenHeight / config.row;
     int sizeCol = config.screenWidth / config.column;
@@ -117,20 +115,13 @@ void analyser(struct arg_config config)
         // save value in the map
         int colPlace = val1 / sizeCol;
         int rowPlace = val2 / sizeRow;
-        int *v = &map[rowPlace][colPlace];
-        if (!*v)
-        {
-            *v = 1;
-        }
-        else
-        {
-            ++*v;
-            if (*v > max)
-            {
-                max = *v;
-            }
-        }
+        int *val = &map[rowPlace + colPlace * config.row]; 
+        ++*val;
+        if (*val > max) max = *val;
     }
+
+    printf("max click in same spot: %i\n", max);
+    // printMap(config.column, config.row, map);
 
     // construct image based on the map
     int sizeRowImg = config.height / config.row;
@@ -145,7 +136,7 @@ void analyser(struct arg_config config)
     {
         for (int x = 0; x < config.column; x++)
         {
-            color = scaleColor(0, max, map[y][x], 0xFFFFFFFF, 0xFF0000FF);
+            color = scaleColor(0, max, map[x + y * config.row], 0xFFFFFFFF, 0xFF0000FF);
             for (int yy = sizeRowImg * y; yy < sizeRowImg * (y + 1); yy++)
             {
                 for (int xx = sizeColImg * x; xx < sizeColImg * (x + 1); xx++)

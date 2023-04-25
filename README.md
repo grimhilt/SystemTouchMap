@@ -28,4 +28,4 @@ for any corresponding short options.
 Report bugs to https://github.com/grimhilt/SystemTouchMap/issues.
 ```
 
-Use ``./main --log --file logs.txt`` to first logs every click and then when you have recover enough click you can generate a map with ``./main --analyse --file logs.txt``?
+Use ``./main --log --file logs.txt`` to first logs every click and then when you have recover enough click you can generate a map with ``./main --analyse --file logs.txt``.
