@@ -142,7 +142,6 @@ void analyser(struct arg_config config)
         }
     }
 
-    printf("max click in same spot: %i\n", max);
     // printMap(config.column, config.row, map);
 
     // construct image based on the map
@@ -155,12 +154,19 @@ void analyser(struct arg_config config)
     SDL_Surface *surface =
         create_surface(sizeColImg * config.column, sizeRowImg * config.row);
     Uint32 color = 0xFFFF0000;
+    int min = map[0];
+    int index = 0;
     for (int y = 0; y < config.row; y++)
     {
         for (int x = 0; x < config.column; x++)
         {
-            color = scaleColor(0, max, map[x + y * config.row], 0xFFFFFFFF,
+            index = x + y * config.row;
+            color = scaleColor(0, max, map[index], 0xFFFFFFFF,
                                0xFF0000FF);
+            if (min > map[index])
+            {
+                min = map[index];
+            }
             for (int yy = sizeRowImg * y; yy < sizeRowImg * (y + 1); yy++)
             {
                 for (int xx = sizeColImg * x; xx < sizeColImg * (x + 1); xx++)
@@ -170,6 +176,8 @@ void analyser(struct arg_config config)
             }
         }
     }
+    printf("Click in same spot (min, max): %i,%i\n", min, max);
+
 
     if (config.save != NULL)
     {
