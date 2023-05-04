@@ -142,14 +142,11 @@ void analyser(struct arg_config config)
         }
     }
 
-    // printMap(config.column, config.row, map);
+    printMap(config.column, config.row, map);
 
     // construct image based on the map
     int sizeRowImg = config.height / config.row;
     int sizeColImg = config.width / config.column;
-    printf("c:%i, r:%i, w:%i, h:%i, szC:%i, szR:%i, szW:%i, szH:%i\n",
-           config.column, config.row, config.width, config.height, sizeColImg,
-           sizeRowImg, sizeColImg * config.column, sizeRowImg * config.row);
 
     SDL_Surface *surface =
         create_surface(sizeColImg * config.column, sizeRowImg * config.row);
@@ -160,7 +157,8 @@ void analyser(struct arg_config config)
     {
         for (int x = 0; x < config.column; x++)
         {
-            index = x + y * config.row;
+            index = x + y * config.column;
+            
             color = scaleColor(0, max, map[index], 0xFFFFFFFF,
                                0xFF0000FF);
             if (min > map[index])

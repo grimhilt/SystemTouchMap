@@ -78,7 +78,7 @@ void clicked(int *numberClicks, int root_x, int root_y, FILE *f, char *file)
     ++*numberClicks;
 
     // reopen the stream to save the buffer
-    if (*numberClicks % 500 == 0)
+    if (*numberClicks % 100 == 0)
     {
         fclose(f);
         f = fopen(file, "a");
