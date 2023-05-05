@@ -13,11 +13,11 @@ Behavior:
 
 ## Context
 
-I am part of the group of person that put their task bar on top. And a lot people ask me why, arguing that if it is on the bottom by default it must be better and they prefer it there. For a long time I responded without proof that it was more efficient as most of the clicks are done on the upper zone of your screen.
-This time when I haven't any proof it revolut with this program. I logged all my clicks for a week, accumulating more than 17000 clicks on my laptop and here are the results: 
+I belong to the people that put their taskbar on top. And a lot of people ask me why, arguing that if it is on the bottom by default it must be better and they feel it is. For a long time, I responded without proof that it was more efficient as most of the clicks are done on the upper zone of your screen, effectively reducing the cursor's travel to the task bar.
+I finally had the time to find the proof, I logged all my clicks for a week, accumulating more than 17000 clicks on my laptop and here are the results obtained with ``./main -a -f logs -c 200 -r 200 -s 200200.png`` showing a visual representation of my clicks in 200 columns and 200 rows: 
 ![200x200 map of clicks](https://github.com/grimhilt/medias/blob/master/SystemTouchMap/200200.png)
 
-So in my usage (which was mostly code and browsing) most of my clicks are on the upper part of the screen. So it would indeed be more efficient to add the task bar on top as it reduce the mouse travel when switching application. I need to precise that I am currently running on a linux with polybar so there is not clicks use to switch application even if we can notice some clicks to switch desktop. Finally I would say that now I just prefer having my task bar on top by habits and I prefer to look in front of me to see the time than looking down.
+By separating my clicks in two rows (``./main -a -f logs -c 1 -r 2``) I can see that with my laptop usage (which was mostly code and browsing) most of my clicks are on the upper part of the screen (9052 on the upper part against 8194 on the bottom part). So it would indeed be more efficient to add the task bar on top. I need to precise that I am currently running on a linux with polybar so there is not a lot of clicks on the task bar even if we can notice some clicks to switch desktop. Finally I would say that now I prefer having my task bar on top by habits and because I find it easier to look in front of me to see the time or other informations than looking down.
 
 ## Usage
 
@@ -44,3 +44,6 @@ Report bugs to https://github.com/grimhilt/SystemTouchMap/issues.
 ```
 
 Use ``./main --log --file logs.txt`` to first logs every click and then when you have recover enough click you can generate a map with ``./main --analyse --file logs.txt``.
+
+## Installation
+It is quite the usual it use libinput and you can build the project with make. However as it works with libinput it will work only with linux and with xorg (used to find the touchpad event).
